@@ -2,6 +2,8 @@ package com.highmaster.whatsappclone.chat;
 
 import com.highmaster.whatsappclone.common.BaseAuditingEntity;
 import com.highmaster.whatsappclone.message.Message;
+import com.highmaster.whatsappclone.message.MessageState;
+import com.highmaster.whatsappclone.message.MessageType;
 import com.highmaster.whatsappclone.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static jakarta.persistence.GenerationType.UUID;
@@ -34,6 +37,36 @@ public class Chat extends BaseAuditingEntity {
     @OneToMany(mappedBy = "chat", fetch = FetchType.EAGER)
     @OrderBy("createdDate DESC")
     private List<Message> messages;
+
+    @Transient
+    public String getChatName(final String senderId) {
+        if (recipient.getId().equals(senderId)) {
+            return  sender.getFirstName() + " " + sender.getLastName();
+        }
+        return recipient.getFirstName() + " " + recipient.getLastName();
+    }
+
+    @Transient
+    public long getUnreadMessages(final String senderId) {
+        return messages
+                .stream()
+                .filter(m -> m.getReceiverId().equals(senderId))
+                .filter(m -> MessageState.SENT == m.getState())
+                .count();
+    }
+
+    @Transient
+    public String getLastMessage() {
+        if (messages != null && !messages.isEmpty()){
+            if (messages.get(0).getType() != MessageType.TEXT) {
+                return "Attachment";
+            }
+            return null;
+        }
+
+//        @Transient
+//        public LocalDateTime get;
+    }
 
 
 }
