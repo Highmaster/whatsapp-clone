@@ -4,7 +4,7 @@ import {ChatResponse} from '../../services/models/chat-response';
 import {ChatService} from '../../services/services/chat.service';
 
 @Component({
-
+  standalone: true,
   selector: 'app-main',
   imports: [
     ChatListComponent
