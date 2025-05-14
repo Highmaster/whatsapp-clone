@@ -1,4 +1,4 @@
-import {Component, input, InputSignal} from '@angular/core';
+import {Component, input, InputSignal, output} from '@angular/core';
 import {ChatResponse} from '../../services/models/chat-response';
 import {DatePipe} from '@angular/common';
 import {UserResponse} from '../../services/models/user-response';
@@ -18,6 +18,7 @@ export class ChatListComponent {
   chats: InputSignal<ChatResponse[]> = input<ChatResponse[]>([]);
   searchNewContact = false;
   contacts:Array<UserResponse> =[];
+  chatSelected =output<ChatResponse>();
 
   constructor(
     private userService: UserService
@@ -38,6 +39,7 @@ export class ChatListComponent {
 
 
   chatClicked(chat: ChatResponse) {
+    this.chatSelected.emit(chat);
 
   }
 

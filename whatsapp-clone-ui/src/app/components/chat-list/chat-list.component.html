@@ -1,11 +1,6 @@
 <div class="sticky-top bg-white">
   <div class="d-flex justify-content-between align-items-center gap-2 p-2">
     <h4>Chat</h4>
-    <!--    @if (!searchNewContact){-->
-    <!--    <i class="fas fa-comment-medical cursor-pointer" (click)="searchContact()"></i>-->
-    <!--    } @else {-->
-    <!--    <i class="fas fa-times-circle cursor-pointer" (click)="searchNewContact = false"></i>-->
-    <!--    }-->
     <ng-container *ngIf="!searchNewContact; else elseBlock">
       <i class="fas fa-comment-medical cursor-pointer" (click)="searchContact()"></i>
     </ng-container>
@@ -27,63 +22,59 @@
       <span class="badge rounded-pill text-bg-light cursor-pointer">Favorites</span>
     </div>
   </div>
-
 </div>
 
-<div class="chat-list  mt-3">
-
-  @if(chats().length && !searchNewContact) {
-  @for (chat of chats(); track chat) {
-  <div class="d-flex align-items-center justify-content-between border-bottom-gray p-2"
-       (click)="chatClicked(chat)"
-  >
-    <div class="d-flex gap-2">
-      <div class="user-img">
-        <img src="user.png" alt="">
+<div class="chat-list mt-3">
+  <ng-container *ngIf="chats().length && !searchNewContact; else noChatsOrSearch">
+    <div *ngFor="let chat of chats()" class="d-flex align-items-center justify-content-between border-bottom-gray p-2"
+         (click)="chatClicked(chat)">
+      <div class="d-flex gap-2">
+        <div class="user-img">
+          <img src="user.png" alt="">
+        </div>
+        <div class="d-flex flex-column">
+          <span>{{chat.name}}</span>
+          <small class="text-secondary">
+            <ng-container *ngIf="chat.lastMessage === 'Attachment'">
+              <i class="fas fa-image"></i>
+            </ng-container>
+            {{wrapMessage(chat.lastMessage)}}
+          </small>
+        </div>
       </div>
-      <div class="d-flex flex-column">
-        <span>{{chat.name}}</span>
-        <small class="text-secondary">
-          @if (chat.lastMessage === 'Attachment'){
-          <1 class= "fas fa-image></i>
-          }
-          {{wrapMessage(Chat.lastMessage)}}
-
+      <div class="d-flex flex-column align-items-end">
+        <span class="msg-date"
+              [class.unread]="chat.unreadCount && chat.unreadCount > 0">
+          {{ chat.lastMessageTime | date: 'dd.MM.yy HH:mm'}}
+        </span>
+        <small *ngIf="chat.unreadCount && chat.unreadCount > 0" class="unread-msg-badge">
+          {{chat.unreadCount}}
         </small>
-
       </div>
-
     </div>
-    <div class="d-flex flex-column align-items-end">
-      <span class="msg-date"
-            [class.unread] = "chat.unreadCount && chat.unreadCount > 0"
-      >
+  </ng-container>
 
-        {{ chat.lastMessageTime | date: 'dd.MM.yy HH:mm'}}
-      </span>
-      @if(chat.unreadCount && chat.unreadCount> 0){
-        <small class= "unread-msg-badge">{{chat.unreadCount}}</small>
-      }
+  <ng-template #noChatsOrSearch>
+    <ng-container *ngIf="searchNewContact; else noChats">
+      <div *ngFor="let contact of contacts" class="d-flex align-items-center justify-content-between border-bottom-gray p-2"
+           (click)="selectContact(contact)">
+        <div class="d-flex gap-2">
+          <div class="user-img">
+            <img src="user.png" alt="">
+          </div>
+          <div class="d-flex flex-column">
+            <span>{{contact.firstName + ' ' + contact.lastName}}</span>
+            <small *ngIf="contact.online" class="text-secondary">Online</small>
+            <small *ngIf="!contact.online" class="text-secondary">
+              Last seen {{contact.lastSeen | date: 'dd.MM.yyyy HH:mm'}}
+            </small>
+          </div>
+        </div>
+      </div>
+    </ng-container>
 
-    </div>
-  </div>
-  }
-  }@else if(searchNewContact) {
-  @for(contact of contacts; track contact) {
-    <div class="d-flex align-items-center justify-content-between border-bottom-gray p-2"
-    (click)="selectContact(contact)"
-    >
-      <div class="d-flex gap-2"></div>
-    </div>
-  }
-
-  }
-
-
+    <ng-template #noChats>
+      <small>No chats yet...</small>
+    </ng-template>
+  </ng-template>
 </div>
-
-
-
-
-
-
